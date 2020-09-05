@@ -28,7 +28,7 @@ set_mesurements<-select(.data = data,subject,id_act,matches("mean"),matches("std
 ##3.Uses descriptive activity names to name the activities in the data set.
 set_activities<-set_mesurements%>%mutate(activity=(activities[id_act, 2]))%>%select(subject,id_act,activity,everything())
 
-##Appropriately labels the data set with descriptive variable names.
+##4.Appropriately labels the data set with descriptive variable names.
 names(set_activities)<-gsub("Acc", "Accelerometer", names(set_activities))
 names(set_activities)<-gsub("Gyro", "Gyroscope", names(set_activities))
 names(set_activities)<-gsub("^t", "Time", names(set_activities))
@@ -36,6 +36,14 @@ names(set_activities)<-gsub("BodyBody", "Body", names(set_activities))
 names(set_activities)<-gsub("Mag", "Magnitude", names(set_activities))
 names(set_activities)<-gsub("^f", "Frequency", names(set_activities))
 names(set_activities)<-gsub("tBody", "TimeBody", names(set_activities))
-names(set_activities)<-gsub("mean()", "Mean", names(set_activities))
-names(set_activities)<-gsub("std()", "STD", names(set_activities))
-names(set_activities)<-gsub("freq()", "Frequency", names(set_activities))
+names(set_activities)<-gsub("mean\\(\\)", "Mean", names(set_activities))
+names(set_activities)<-gsub("std\\(\\)", "STD", names(set_activities))
+names(set_activities)<-gsub("Freq\\(\\)", "Frequency", names(set_activities))
+
+##4.Generating a .txt file with the tidy data
+write.table(set_activities, "4_TidyData.txt", row.name=FALSE)
+
+##5.From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+data_group<-group_by(.data = set_activities,subject, activity)
+TidyDataGroupAverage<-summarise_all(data_group,mean)
+write.table(TidyDataGroupAverage, "5_TidyDataGroupAverage.txt", row.name=FALSE)
